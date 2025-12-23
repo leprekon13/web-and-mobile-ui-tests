@@ -16,6 +16,8 @@ public class WikipediaMobilePage {
     private By searchInput = AppiumBy.xpath("//*[contains(@resource-id, 'search_src_text')]");
     private By searchResult = AppiumBy.xpath("//*[contains(@resource-id, 'page_list_item_title')]");
     private By skipButton = AppiumBy.id("org.wikipedia.alpha:id/fragment_onboarding_skip_button");
+    private By articleTitle = AppiumBy.xpath("//android.view.View[@content-desc]");
+    private By gotItButton = AppiumBy.xpath("//*[@text='GOT IT' or @text='ПОНЯТНО' or @resource-id='org.wikipedia.alpha:id/buttonView']");
 
     public WikipediaMobilePage(AndroidDriver driver) {
         this.driver = driver;
@@ -25,8 +27,7 @@ public class WikipediaMobilePage {
     public void clickSearchContainer() {
         try {
             wait.until(ExpectedConditions.elementToBeClickable(skipButton)).click();
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         wait.until(ExpectedConditions.elementToBeClickable(searchContainer)).click();
     }
 
@@ -34,7 +35,24 @@ public class WikipediaMobilePage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(searchInput)).sendKeys(text);
     }
 
+    public void selectFirstSearchResult() {
+        wait.until(ExpectedConditions.elementToBeClickable(searchResult)).click();
+        // Пробуем закрыть всплывающее окно, если оно появилось
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(gotItButton)).click();
+        } catch (Exception e) {}
+    }
+
     public boolean isSearchResultDisplayed() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(searchResult)).isDisplayed();
+    }
+
+    public String getArticleTitle() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(articleTitle)).getAttribute("content-desc");
+    }
+
+    public void scrollToBottom() {
+        driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(10)"));
     }
 }

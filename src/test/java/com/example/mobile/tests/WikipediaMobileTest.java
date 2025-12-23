@@ -10,10 +10,27 @@ public class WikipediaMobileTest extends BaseMobileTest {
     @Test
     public void testSearchFunctionality() {
         WikipediaMobilePage mobilePage = new WikipediaMobilePage(driver);
-
         mobilePage.clickSearchContainer();
         mobilePage.enterSearchText("Appium");
-
         Assert.assertTrue(mobilePage.isSearchResultDisplayed());
+    }
+
+    @Test
+    public void testOpenArticle() {
+        WikipediaMobilePage mobilePage = new WikipediaMobilePage(driver);
+        mobilePage.clickSearchContainer();
+        mobilePage.enterSearchText("Java");
+        mobilePage.selectFirstSearchResult();
+        String title = mobilePage.getArticleTitle();
+        Assert.assertNotNull(title);
+    }
+
+    @Test
+    public void testScrollArticle() {
+        WikipediaMobilePage mobilePage = new WikipediaMobilePage(driver);
+        mobilePage.clickSearchContainer();
+        mobilePage.enterSearchText("Selenium");
+        mobilePage.selectFirstSearchResult();
+        mobilePage.scrollToBottom();
     }
 }
