@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 public class WikipediaMobileTest extends BaseMobileTest {
 
-    @Test
+    @Test(priority = 1)
     public void testSearchFunctionality() {
         WikipediaMobilePage mobilePage = new WikipediaMobilePage(driver);
         mobilePage.clickSearchContainer();
@@ -15,7 +15,7 @@ public class WikipediaMobileTest extends BaseMobileTest {
         Assert.assertTrue(mobilePage.isSearchResultDisplayed());
     }
 
-    @Test
+    @Test(priority = 2)
     public void testOpenArticle() {
         WikipediaMobilePage mobilePage = new WikipediaMobilePage(driver);
         mobilePage.clickSearchContainer();
@@ -25,7 +25,7 @@ public class WikipediaMobileTest extends BaseMobileTest {
         Assert.assertNotNull(title);
     }
 
-    @Test
+    @Test(priority = 3)
     public void testScrollArticle() {
         WikipediaMobilePage mobilePage = new WikipediaMobilePage(driver);
         mobilePage.clickSearchContainer();
