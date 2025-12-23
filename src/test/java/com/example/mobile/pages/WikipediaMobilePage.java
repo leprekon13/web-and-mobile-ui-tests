@@ -3,10 +3,12 @@ package com.example.mobile.pages;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class WikipediaMobilePage {
     private AndroidDriver driver;
@@ -17,17 +19,29 @@ public class WikipediaMobilePage {
     private By searchResult = AppiumBy.xpath("//*[contains(@resource-id, 'page_list_item_title')]");
     private By skipButton = AppiumBy.id("org.wikipedia.alpha:id/fragment_onboarding_skip_button");
     private By articleTitle = AppiumBy.xpath("//android.view.View[@content-desc]");
-    private By gotItButton = AppiumBy.xpath("//*[@text='GOT IT' or @text='ПОНЯТНО' or @resource-id='org.wikipedia.alpha:id/buttonView']");
+    private By closeButton = AppiumBy.id("org.wikipedia.alpha:id/closeButton");
 
     public WikipediaMobilePage(AndroidDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
-    public void clickSearchContainer() {
+    private void dismissPopups() {
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(skipButton)).click();
-        } catch (Exception e) {}
+            List<WebElement> onboardingSkip = driver.findElements(skipButton);
+            if (!onboardingSkip.isEmpty()) onboardingSkip.get(0).click();
+
+            List<WebElement> gameDialogClose = driver.findElements(closeButton);
+            if (!gameDialogClose.isEmpty()) gameDialogClose.get(0).click();
+        } catch (Exception e) {
+        } finally {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        }
+    }
+
+    public void clickSearchContainer() {
+        dismissPopups();
         wait.until(ExpectedConditions.elementToBeClickable(searchContainer)).click();
     }
 
@@ -37,21 +51,23 @@ public class WikipediaMobilePage {
 
     public void selectFirstSearchResult() {
         wait.until(ExpectedConditions.elementToBeClickable(searchResult)).click();
-        // Пробуем закрыть всплывающее окно, если оно появилось
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(gotItButton)).click();
-        } catch (Exception e) {}
     }
 
     public boolean isSearchResultDisplayed() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(searchResult)).isDisplayed();
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(searchResult)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String getArticleTitle() {
+        dismissPopups();
         return wait.until(ExpectedConditions.visibilityOfElementLocated(articleTitle)).getAttribute("content-desc");
     }
 
     public void scrollToBottom() {
+        dismissPopups();
         driver.findElement(AppiumBy.androidUIAutomator(
                 "new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(10)"));
     }
