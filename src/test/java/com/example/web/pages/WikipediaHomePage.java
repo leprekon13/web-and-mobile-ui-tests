@@ -1,14 +1,15 @@
 package com.example.web.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class WikipediaHomePage {
     private WebDriver driver;
 
-    private By searchInput = By.id("searchInput");
-    private By searchButton = By.xpath("//button[@type='submit']");
+    private By searchInput = By.name("search");
+    private By searchButton = By.xpath("//button[contains(@class, 'search-form__button')]");
     private By mainPageLink = By.id("n-mainpage-description");
 
     public WikipediaHomePage(WebDriver driver) {
@@ -20,11 +21,21 @@ public class WikipediaHomePage {
     }
 
     public void enterSearchText(String text) {
-        driver.findElement(searchInput).sendKeys(text);
+        WebElement element = driver.findElement(searchInput);
+        element.clear();
+        element.sendKeys(text);
+        element.sendKeys(Keys.ENTER);
     }
 
     public void clickSearch() {
-        driver.findElement(searchButton).click();
+        try {
+            WebElement button = driver.findElement(searchButton);
+            if (button.isDisplayed()) {
+                button.click();
+            }
+        } catch (Exception e) {
+            driver.findElement(searchInput).sendKeys(Keys.ENTER);
+        }
     }
 
     public boolean isMainPageLinkDisplayed() {

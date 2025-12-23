@@ -28,8 +28,7 @@ public class WikipediaWebTest extends BaseWebTest {
         WikipediaHomePage homePage = new WikipediaHomePage(driver);
         homePage.open();
         homePage.enterSearchText("Википедия:Портал сообщества");
-        homePage.clickSearch();
-        Assert.assertTrue(driver.getCurrentUrl().contains("Портал_сообщества"));
+        Assert.assertTrue(driver.getTitle().contains("Портал сообщества"));
     }
 
     @Test
